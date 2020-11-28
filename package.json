@@ -48,7 +48,9 @@
       "import/newline-after-import":0,
       "no-multiple-empty-lines":0,
       " key-spacing":0 ,
-      "arrow-parens":0
+      "arrow-parens":0,
+      "prefer-templateprefer-template":0,
+      "prefer-template":0
     }
   },
   "browserslist": [

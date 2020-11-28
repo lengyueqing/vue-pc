@@ -36,6 +36,7 @@
             type="text"
             id="autocomplete"
             class="input-error input-xxlarge"
+            v-model="searName"
           />
           <button
             @click="search"
@@ -53,9 +54,17 @@
 <script>
 export default {
   name: "Header",
+  data() {
+    return {
+      searName: "",
+    };
+  },
   methods: {
     search() {
-      this.$router.push("/search");
+      const { searName } = this;
+      const params = searName ? `/${searName}` : "";
+      const loaction = "/search" + params;
+      this.$router.push(loaction);
     },
   },
 };

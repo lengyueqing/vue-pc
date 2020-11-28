@@ -16,14 +16,20 @@ export default new VueRouter({
     },
     {
       path: "/login",
-      component: Login
+      component: Login,
+      meta: {
+        isFooter: true
+      }
     },
     {
       path: "/register",
-      component: Register
+      component: Register,
+      meta: {
+        isFooter: true
+      }
     },
     {
-      path: "/search",
+      path: "/search/:searname?",
       component: Search
     }
   ]
