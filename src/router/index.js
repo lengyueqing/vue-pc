@@ -46,7 +46,8 @@ export default new VueRouter({
       }
     },
     {
-      path: "/search/:searname?",
+      name: "search",
+      path: "/search/:searName?",
       component: Search
     }
   ]

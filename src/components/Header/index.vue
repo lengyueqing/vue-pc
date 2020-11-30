@@ -62,9 +62,20 @@ export default {
   methods: {
     search() {
       const { searName } = this;
-      const params = searName ? `/${searName}` : "";
+      /*  const params = searName ? `/${searName}` : "";
       const loaction = "/search" + params;
-      this.$router.push(loaction);
+      this.$router.push(loaction); */
+      const location = {
+        name: "search",
+      };
+      if (searName) {
+        location.params = { searName };
+      }
+      const { categoryName } = this.$route.query;
+      if (categoryName) {
+        location.query = this.$route.query;
+      }
+      this.$router.push(location);
     },
   },
 };

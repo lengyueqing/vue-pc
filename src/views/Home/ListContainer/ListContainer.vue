@@ -4,9 +4,14 @@
       <div class="center">
         <!--banner轮播-->
         <div class="swiper-container" id="mySwiper">
-          <div class="swiper-wrapper">
+          <div
+            class="swiper-wrapper"
+            v-for="banner in banners"
+            :key="banner.id"
+          >
             <div class="swiper-slide">
-              <img src="./images/banner1.jpg" />
+              <!--  <img src="./images/banner1.jpg" /> -->
+              <img :src=banner.imgUrl />
             </div>
           </div>
           <!-- 如果需要分页器 -->
@@ -91,8 +96,20 @@
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
 export default {
   name: "ListContainer",
+  computed: {
+    ...mapState({
+      banners: (state) => state.home.banners,
+    }),
+  },
+  methods: {
+    ...mapActions(["getBanners"]),
+  },
+  mounted() {
+    this.getBanners();
+  },
 };
 </script>
 
