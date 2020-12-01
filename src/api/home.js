@@ -15,3 +15,10 @@ export const reqGetBanners = () => {
     url: "/banners"
   });
 };
+//获取首页楼层数据
+export const reqGetFoors = () => {
+  return mockRequest({
+    method: "GET",
+    url: "/floors"
+  });
+};
