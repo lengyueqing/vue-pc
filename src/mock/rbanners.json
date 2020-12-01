@@ -1,4 +1,4 @@
 [{
     "id|+1":1,
-    "imgUrl":"@image('720x455','@color')"
+    "imgUrl":"@image('720x455','@color','#FFF','杨金亮sao')"
 }]

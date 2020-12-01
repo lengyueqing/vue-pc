@@ -117,6 +117,8 @@ export default {
     },
   },
   mounted() {
+    //在请求之前判读vuex有没有数据
+    if (this.categoryList.length) return;
     this.getBaseList();
   },
 };

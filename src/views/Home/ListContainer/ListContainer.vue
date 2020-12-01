@@ -3,15 +3,15 @@
     <div class="sortList clearfix">
       <div class="center">
         <!--banner轮播-->
-        <div class="swiper-container" id="mySwiper">
-          <div
-            class="swiper-wrapper"
-            v-for="banner in banners"
-            :key="banner.id"
-          >
-            <div class="swiper-slide">
+        <div class="swiper-container">
+          <div class="swiper-wrapper">
+            <div
+              class="swiper-slide"
+              v-for="banner in banners"
+              :key="banner.id"
+            >
               <!--  <img src="./images/banner1.jpg" /> -->
-              <img :src=banner.imgUrl />
+              <img :src="banner.imgUrl" />
             </div>
           </div>
           <!-- 如果需要分页器 -->
@@ -97,6 +97,10 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+//引入swiper俩个文件 Swipers默认只有核心轮播功能，需要别的功能需要引入并加载
+import Swiper, { Navigation, Pagination, Autoplay } from "swiper";
+import "swiper/swiper-bundle.min.css";
+Swiper.use([Navigation, Pagination, Autoplay]);
 export default {
   name: "ListContainer",
   computed: {
@@ -107,8 +111,30 @@ export default {
   methods: {
     ...mapActions(["getBanners"]),
   },
-  mounted() {
-    this.getBanners();
+  async mounted() {
+    //await就会等待vuex将数据更新完毕，在执行后面的代码
+    await this.getBanners();
+
+    this.$nextTick(() => {
+      new Swiper(".swiper-container", {
+        loop: true, // 循环模式选项
+        autoplay: {
+          delay: 2000,
+          stopOnLastSlide: false,
+          disableOnInteraction: false,
+        },
+        // 如果需要分页器
+        pagination: {
+          el: ".swiper-pagination",
+        },
+
+        // 如果需要前进后退按钮
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+      });
+    });
   },
 };
 </script>

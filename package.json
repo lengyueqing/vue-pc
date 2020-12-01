@@ -12,6 +12,7 @@
     "core-js": "^3.6.5",
     "element-ui": "^2.4.5",
     "nprogress": "^0.2.0",
+    "swiper": "^6.3.5",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0"
@@ -64,7 +65,8 @@
       "indent": 0,
       "arrow-body-style": 0,
       "import/prefer-default-export": 0,
-      "import/no-extraneous-dependencies":0
+      "import/no-extraneous-dependencies": 0,
+      "no-new":0
     }
   },
   "browserslist": [
