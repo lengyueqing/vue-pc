@@ -72,11 +72,22 @@ export default {
         location.params = { searName };
       }
       const { categoryName } = this.$route.query;
+
       if (categoryName) {
         location.query = this.$route.query;
       }
-      this.$router.push(location);
+
+      if (this.$route.name === "search") {
+        this.$router.replace(location);
+      } else {
+        this.$router.push(location);
+      }
     },
+  },
+  mounted() {
+    this.$bus.$on("clearKeyword", () => {
+      this.searName = "";
+    });
   },
 };
 </script>

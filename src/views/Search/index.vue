@@ -11,23 +11,51 @@
             </li>
           </ul>
           <ul class="fl sui-tag">
-            <li class="with-x">手机</li>
-            <li class="with-x">iphone<i>×</i></li>
-            <li class="with-x">华为<i>×</i></li>
-            <li class="with-x">OPPO<i>×</i></li>
+            <li class="with-x" v-show="options.keyword" @click="delKeyword">
+              关键字：{{ options.keyword }}<i>×</i>
+            </li>
+            <li
+              class="with-x"
+              v-show="options.categoryName"
+              @click="delCategory"
+            >
+              分类名称 ：{{ options.categoryName }}<i>×</i>
+            </li>
+            <li class="with-x" v-show="options.trademark" @click="delTrademark">
+              品牌：{{ options.trademark.split(":")[1] }}<i>×</i>
+            </li>
+            <li
+              class="with-x"
+              v-for="(prop, index) in options.props"
+              :key="prop"
+              @click="delProp(index)"
+            >
+              {{ prop.split(":")[2] }}:{{ prop.split(":")[1] }}<i>×</i>
+            </li>
           </ul>
         </div>
 
         <!--selector-->
-        <SearchSelector />
+        <SearchSelector :addTrademark="addTrademark" @add-prop="addProp" />
 
         <!--details-->
         <div class="details clearfix">
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <li
+                  :class="{ active: options.order.indexOf('1') > -1 }"
+                  @click="setOrder('1')"
+                >
+                  <a
+                    >综合<i
+                      :class="{
+                        iconfont: true,
+                        'icon-jiantou_yemian_xiangshang': isAllDown,
+                        'icon-jiantou_yemian_xiangxia': !isAllDown,
+                      }"
+                    ></i
+                  ></a>
                 </li>
                 <li>
                   <a href="#">销量</a>
@@ -38,11 +66,31 @@
                 <li>
                   <a href="#">评价</a>
                 </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
+                <li
+                  :class="{ active: options.order.indexOf('2') > -1 }"
+                  @click="setOrder('2')"
+                >
+                  <a
+                    >价格
+                    <span>
+                      <i
+                        :class="{
+                          iconfont: true,
+                          'icon-arrow-up-filling': true,
+                          deactive:
+                            options.order.indexOf('2') > -1 && isPriceDown,
+                        }"
+                      ></i>
+                      <i
+                        :class="{
+                          iconfont: true,
+                          'icon-arrow-down-filling': true,
+                          deactive:
+                            options.order.indexOf('2') > -1 && !isPriceDown,
+                        }"
+                      ></i>
+                    </span>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -89,35 +137,23 @@
               </li>
             </ul>
           </div>
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="options.pageNo"
+            :pager-count="5"
+            :page-sizes="[5, 10, 15, 20]"
+            :page-size="5"
+            background
+            layout="prev,
+            pager,
+            next,
+            total,
+            sizes,
+            jumper"
+            :total="total"
+          >
+          </el-pagination>
         </div>
       </div>
     </div>
@@ -131,14 +167,134 @@ import SearchSelector from "./SearchSelector/SearchSelector";
 
 export default {
   name: "Search",
+  data() {
+    return {
+      options: {
+        category1Id: "",
+        category2Id: "",
+        category3Id: "",
+        categoryName: "",
+        keyword: "",
+        order: "1:desc",
+        pageNo: "1",
+        pageSize: 5,
+        props: [],
+        trademark: "",
+      },
+      isAllDown: true,
+      isPriceDown: false,
+    };
+  },
   computed: {
-    ...mapGetters(["goodsList"]),
+    ...mapGetters(["goodsList", "total"]),
   },
   methods: {
     ...mapActions(["getProductList"]),
+    updateProductList(pageNo = 1) {
+      const { searName: keyword } = this.$route.params;
+      const {
+        categoryName,
+        category1Id,
+        category2Id,
+        category3Id,
+      } = this.$route.query;
+
+      const options = {
+        ...this.options,
+        keyword,
+        categoryName,
+        category1Id,
+        category2Id,
+        category3Id,
+        pageNo,
+      };
+
+      this.options = options;
+
+      this.getProductList(options);
+      //删除关键字
+    },
+    delKeyword() {
+      this.options.keyword = "";
+      this.$bus.$emit("clearKeyword");
+      //清除路径上的params参数
+      this.$router.replace({
+        name: "search",
+        query: this.$route.query,
+      });
+    },
+    //删除分类
+    delCategory() {
+      this.options.categoryName = "";
+      this.options.category1Id = "";
+      this.options.category2Id = "";
+      this.options.category3Id = "";
+
+      this.$router.replace({
+        name: "search",
+        params: this.$route.params,
+      });
+    },
+    //添加品牌并更新数据
+    addTrademark(trademark) {
+      this.options.trademark = trademark;
+      this.updateProductList();
+    },
+    //删除品牌数据
+    delTrademark() {
+      this.options.trademark = "";
+      this.updateProductList();
+    },
+    //添加品牌属性
+    addProp(prop) {
+      this.options.props.push(prop);
+      this.updateProductList();
+    },
+    delProp(index) {
+      this.options.props.splice(index, 1);
+      this.updateProductList();
+    },
+    //设置排序方式
+    setOrder(order) {
+      /* let [orderNum, orderType] = this.options.order.split(":"); */
+      const orderNum = this.options.order.split(":")[0];
+      let orderType = this.options.order.split(":")[1];
+      if (orderNum === order) {
+        //看order是1改综合排序
+        //看order不是1改价格排序
+        if (order === "1") {
+          this.isAllDown = !this.isAllDown;
+        } else {
+          this.isPriceDown = !this.isPriceDown;
+        }
+        orderType === "desc" ? "asc" : "desc";
+      } else {
+        if (order === "1") {
+          orderType = this.isAllDown ? "desc" : "asc";
+        } else {
+          this.isPriceDown = false;
+          orderType = "asc";
+        }
+      }
+      this.options.order = `${order}:${orderType}`;
+      this.updateProductList();
+    },
+    //每当页面条数发生变化触发
+    handleSizeChange(pageSize) {
+      this.options.pageSize = pageSize;
+      this.updateProductList();
+    },
+    handleCurrentChange(pageNo) {
+      this.updateProductList(pageNo);
+    },
+  },
+  watch: {
+    $route() {
+      this.updateProductList();
+    },
   },
   mounted() {
-    this.getProductList();
+    this.updateProductList();
   },
   components: {
     SearchSelector,
@@ -249,13 +405,28 @@ export default {
               line-height: 18px;
 
               a {
-                display: block;
+                display: flex;
+                justify-content: space-around;
                 cursor: pointer;
+                align-items: center;
                 padding: 11px 15px;
                 color: #777;
                 text-decoration: none;
               }
-
+              i {
+                padding-left: 5px;
+              }
+              span {
+                display: flex;
+                flex-direction: column;
+                line-height: 8px;
+                i {
+                  font-size: 12px;
+                  &.deactive {
+                    color: rgba(255, 255, 255, 0.5);
+                  }
+                }
+              }
               &.active {
                 a {
                   background: #e1251b;
