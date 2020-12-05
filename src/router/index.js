@@ -5,6 +5,7 @@ import Home from "../views/Home";
 import Login from "../views/Login";
 import Register from "../views/Register";
 import Search from "../views/Search";
+import Detail from "../views/Detail";
 
 Vue.use(VueRouter);
 //重写push和replace
@@ -49,6 +50,15 @@ export default new VueRouter({
       name: "search",
       path: "/search/:searName?",
       component: Search
+    },
+    {
+      name: "detail",
+      path: "/detail/:id",
+      component: Detail
     }
-  ]
+  ],
+  //每次切换路由，页面都在顶部
+  scrollBehavior() {
+    return { x: 0, y: 0 };
+  }
 });
