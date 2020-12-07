@@ -14,23 +14,35 @@
           </ul>
 
           <div class="content">
-            <form action="##">
-              <div class="input-text clearFix">
-                <span></span>
-                <input type="text" placeholder="邮箱/用户名/手机号" />
-              </div>
+            <form @submit.prevent="submit">
+              <ValidationProvider rules="required" v-slot="{ errors }">
+                <div class="input-text clearFix">
+                  <span></span>
+                  <input
+                    type="text"
+                    placeholder="邮箱/用户名/手机号"
+                    v-model="user.phone"
+                  />
+                  <p :style="{ color: 'red' }">{{ errors[0] }}</p>
+                </div>
+              </ValidationProvider>
+
               <div class="input-text clearFix">
                 <span class="pwd"></span>
-                <input type="text" placeholder="请输入密码" />
+                <input
+                  type="text"
+                  placeholder="请输入密码"
+                  v-model="user.password"
+                />
               </div>
               <div class="setting clearFix">
                 <label class="checkbox inline">
-                  <input name="m1" type="checkbox" value="2" checked="" />
+                  <input name="m1" type="checkbox" v-model="isAuto" />
                   自动登录
                 </label>
                 <span class="forget">忘记密码？</span>
               </div>
-              <button class="btn">登&nbsp;&nbsp;录</button>
+              <button class="btn" type="submit">登&nbsp;&nbsp;录</button>
             </form>
 
             <div class="call clearFix">
@@ -67,22 +79,53 @@
 </template>
 
 <script>
-/* import { reqLogin } from "@api/user"; */
+import { mapState } from "vuex";
+import { ValidationProvider, extend } from "vee-validate";
+import { required } from "vee-validate/dist/rules";
+
+extend("required", required);
 
 export default {
   name: "Login",
-  /*  methods: {
-    // 测试登录
-    login() {
-      reqLogin("13700000000", "11111111")
-        .then((res) => {
-          console.log("res", res);
-        })
-        .catch((err) => {
-          console.log("err", err);
-        });
+  data() {
+    return {
+      user: {
+        phone: "",
+        password: "",
+      },
+      isLogin: false, //正在登陆
+      isAuto: true, //是否自动登陆
+    };
+  },
+  computed: {
+    ...mapState({
+      token: (state) => state.user.token,
+    }),
+  },
+  components: {
+    ValidationProvider,
+  },
+  created() {
+    if (this.token) {
+      this.$router.replace("/");
+    }
+  },
+  methods: {
+    async submit() {
+      try {
+        if (this.isLogin) return;
+        this.isLogin = true;
+        const { phone, password } = this.user;
+        await this.$store.dispatch("login", { phone, password });
+        if (this.isAuto) {
+          localStorage.setItem("token", this.token);
+        }
+        this.$router.replace("/");
+      } catch {
+        this.isLogin = false;
+      }
     },
-  }, */
+  },
 };
 </script>
 

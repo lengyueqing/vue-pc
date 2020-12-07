@@ -1,7 +1,11 @@
 import axios from "axios";
 import NProgress from "nprogress";
+import getUserTempId from "@utils/getUserTempId";
 import "nprogress/nprogress.css";
 
+import store from "../store";
+
+const userTempId = getUserTempId();
 const instance = axios.create({
   baseURL: "/api",
   headers: {
@@ -12,6 +16,11 @@ const instance = axios.create({
 instance.interceptors.request.use(config => {
   //config请求配置对象
   NProgress.start();
+  const token = store.state.user.token;
+  if (token) {
+    config.headers.token = token;
+  }
+  config.headers.userTempId = userTempId;
   return config;
   //舒适化默认返回成功的Promise,所有只会触发成功状态的回调
 });

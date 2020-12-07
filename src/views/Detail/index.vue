@@ -102,12 +102,13 @@
               </dl>
             </div>
             <div class="cartWrap">
-              <div class="controls">
-                <input autocomplete="off" class="itxt" />
-                <a href="javascript:" class="plus">+</a>
-                <a href="javascript:" class="mins">-</a>
-              </div>
-              <div class="add">
+              <el-input-number
+                v-model="skuNum"
+                controls-position="right"
+                :min="1"
+                :max="100"
+              ></el-input-number>
+              <div class="add" @click="addCar">
                 <a href="javascript:">加入购物车</a>
               </div>
             </div>
@@ -357,15 +358,28 @@ export default {
   data() {
     return {
       currentImgIndex: 0,
+      skuNum: 1,
     };
   },
   computed: {
     ...mapGetters(["categoryView", "spuSaleAttrList", "skuInfo"]),
   },
   methods: {
-    ...mapActions(["getProductDetail"]),
+    ...mapActions(["getProductDetail", "updateCartCount"]),
     upImgindex(index) {
       this.currentImgIndex = index;
+    },
+    //加入购物车
+    async addCar() {
+      try {
+        await this.updateCartCount({
+          skuId: this.skuInfo.id,
+          skuNum: this.skuNum,
+        });
+        this.$router.push(`/addcartsuccess?skuNum=${this.skuNum}`);
+      } catch (e) {
+        console.log(e);
+      }
     },
   },
   mounted() {

@@ -9,41 +9,59 @@
         </span>
       </h3>
       <div class="content">
-        <label>手机号:</label>
-        <input type="text" placeholder="请输入你的手机号" v-model="phone" />
-        <span class="error-msg">错误提示信息</span>
+        <label>*手机号:</label>
+        <ValidationProvider rules="required|length|phone" v-slot="{ errors }">
+          <input
+            type="text"
+            placeholder="请输入你的手机号"
+            v-model="user.phone"
+          />
+          <span class="error-msg">{{ errors[0] }}</span>
+        </ValidationProvider>
       </div>
       <div class="content">
-        <label>验证码:</label>
-        <input type="text" placeholder="请输入验证码" v-model="code" />
-        <img
-          ref="code"
-          src="http://182.92.128.115/api/user/passport/code"
-          alt="code"
-        />
-        <span class="error-msg">错误提示信息</span>
+        <label>*验证码:</label>
+        <ValidationProvider rules="required" v-slot="{ errors }">
+          <input type="text" placeholder="请输入验证码" v-model="user.code" />
+          <img
+            ref="code"
+            src="http://182.92.128.115/api/user/passport/code"
+            alt="code"
+          />
+          <span class="error-msg">{{ errors[0] }}</span>
+        </ValidationProvider>
       </div>
       <div class="content">
-        <label>登录密码:</label>
-        <input
-          type="text"
-          placeholder="请输入你的登录密码"
-          v-model="password1"
-        />
-        <span class="error-msg">错误提示信息</span>
+        <label>*登录密码:</label>
+        <ValidationProvider rules="required" v-slot="{ errors }">
+          <input
+            type="text"
+            placeholder="请输入你的登录密码"
+            v-model="user.password"
+          />
+          <span class="error-msg">{{ errors[0] }}</span>
+        </ValidationProvider>
       </div>
       <div class="content">
-        <label>确认密码:</label>
-        <input type="text" placeholder="请输入确认密码" v-model="password2" />
-        <span class="error-msg">错误提示信息</span>
+        <label>*确认密码:</label>
+        <ValidationProvider rules="required" v-slot="{ errors }">
+          <input
+            type="text"
+            placeholder="请输入确认密码"
+            v-model="user.password2"
+          />
+          <span class="error-msg">{{ errors[0] }}</span>
+        </ValidationProvider>
       </div>
       <div class="controls">
-        <input name="m1" type="checkbox" v-model="agree" />
-        <span>同意协议并注册《尚品汇用户协议》</span>
-        <span class="error-msg">错误提示信息</span>
+        <ValidationProvider rules="required" v-slot="{ errors }">
+          <input name="m1" type="checkbox" v-model="user.agree" />
+          <span>*同意协议并注册《尚品汇用户协议》</span>
+          <span class="error-msg">{{ errors[0] }}</span>
+        </ValidationProvider>
       </div>
       <div class="btn">
-        <button>完成注册</button>
+        <button @click="submit">完成注册</button>
       </div>
     </div>
 
@@ -66,16 +84,68 @@
 </template>
 
 <script>
+import { ValidationProvider, extend } from "vee-validate";
+import { required } from "vee-validate/dist/rules";
+
+extend("required", {
+  ...required,
+  message: "带*必须填写",
+});
+extend("length", {
+  validate(value) {
+    return value.length === 11;
+  },
+  message: "长度必须为11位",
+});
+extend("phone", {
+  validate(value) {
+    return /^(13[0-9]|14[01456879]|15[0-3,5-9]|16[2567]|17[0-8]|18[0-9]|19[0-3,5-9])\d{8}$/.test(
+      value
+    );
+  },
+  message: "手机号不符合规范",
+});
 export default {
   name: "Register",
   data() {
     return {
-      phone: "",
-      password1: "",
-      password2: "",
-      code: "",
-      agree: "",
+      user: {
+        phone: "",
+        password: "",
+        password2: "",
+        code: "",
+        agree: false,
+      },
     };
+  },
+  methods: {
+    async submit() {
+      try {
+        const { phone, password, password2, code, agree } = this.user;
+        if (!agree) {
+          this.$message.error("~~~请同意用户协议~~~");
+          return;
+        }
+        if (password !== password2) {
+          this.$message.error("俩次密码输入不一致");
+          return;
+        }
+        //发送注册请求
+        await this.$store.dispatch("register", { phone, password, code });
+        this.$router.push("/login");
+      } catch {
+        this.user.password = "";
+        this.user.password2 = "";
+        this.refresh();
+      }
+      //发送请求
+    },
+    refresh() {
+      this.$refs.code.src = "http://182.92.128.115/api/user/passport/code";
+    },
+  },
+  components: {
+    ValidationProvider,
   },
 };
 </script>
