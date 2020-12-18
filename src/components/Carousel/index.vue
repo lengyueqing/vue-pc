@@ -45,7 +45,8 @@ export default {
   methods: {
     initSwtper() {
       this.swiper = new Swiper(this.$refs.swiper, {
-        loop: true, // 循环模式选项
+        // 循环模式选项
+        loop: true,
         autoplay: {
           // 自动轮播
           delay: 2000, // 轮播间隔时间

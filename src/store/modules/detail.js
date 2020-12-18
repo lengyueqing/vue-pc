@@ -28,6 +28,9 @@ export default {
   mutations: {
     PRODUCT_DETAIL(state, productDetail) {
       state.productDetail = productDetail;
+    },
+    UPDATE_SKUINFO(state, skuInfo) {
+      state.productDetail.skuInfo = skuInfo;
     }
   }
 };

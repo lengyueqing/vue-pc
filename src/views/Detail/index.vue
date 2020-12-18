@@ -376,6 +376,7 @@ export default {
           skuId: this.skuInfo.id,
           skuNum: this.skuNum,
         });
+        this.$store.commit('UPDATE_SKUINFO', this.skuInfo);
         this.$router.push(`/addcartsuccess?skuNum=${this.skuNum}`);
       } catch (e) {
         console.log(e);

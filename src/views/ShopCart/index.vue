@@ -16,8 +16,7 @@
             <input
               type="checkbox"
               name="chk_list"
-              :checked="isChecked"
-              @click="dateCartCheck(cart.skuId, cart.isChecked)"
+              :checked="cart.isChecked"
               ref="inputCheck"
             />
           </li>
@@ -38,6 +37,7 @@
               href="javascript:void(0)"
               @click="updateCount(cart.skuId, -1)"
               class="mins"
+              :disabled="cart.skuNum == 1"
               >-</a
             >
             <input
@@ -46,6 +46,8 @@
               :value="cart.skuNum"
               minnum="1"
               class="itxt"
+              @blur="update(cart.skuId, cart.skuNum, $event)"
+              @input="formatSkuNum"
             />
             <a
               href="javascript:void(0)"
@@ -67,7 +69,11 @@
     </div>
     <div class="cart-tool">
       <div class="select-all">
-        <input class="chooseAll" type="checkbox" />
+        <input
+          class="chooseAll"
+          type="checkbox"
+          :checked="total !== 0 && cartList.length"
+        />
         <span>全选</span>
       </div>
       <div class="option">
@@ -85,7 +91,7 @@
           <i class="summoney">{{ totalPrice }} </i>
         </div>
         <div class="sumbtn">
-          <a class="sum-btn" href="###" target="_blank">结算</a>
+          <a class="sum-btn" @click="submit">结算</a>
         </div>
       </div>
     </div>
@@ -128,6 +134,7 @@ export default {
     //更新数量
     async updateCount(skuId, skuNum) {
       await this.updateCartCount({ skuId, skuNum });
+      console.log(this.$refs);
     },
     //删除
     async del(skuId) {
@@ -136,21 +143,43 @@ export default {
     },
     //切换选中状态
 
-    async dateCartCheck(skuId, isChecked) {
-      this.isChecked = !this.isChecked;
-      console.log(this.isChecked);
-      if (this.isChecked) {
-        isChecked = 1;
-      } else {
-        isChecked = 0;
-      }
+    /*  async dateCartCheck(skuId, isChecked) {
+      this.cartList.map((cart)=>{
+        if(cart.skuId===skuId){
+  @click="dateCartCheck(cart.skuId, cart.isChecked)"        }
+      })
       await this.updateCartCheck({ skuId, isChecked });
       this.getCartList();
+    }, */
+    //输入框的值
+    formatSkuNum(e) {
+      let skuNum = +e.target.value.replace(/\D+/g, "");
+      if (skuNum < 1) {
+        skuNum = 1;
+      } else if (skuNum > 100) {
+        skuNum = 100;
+      }
+    },
+    update(skuId, skuNum, e) {
+      if (+e.target.value === skuNum) {
+        return;
+      }
+      this.updateCartCount({ skuId, skuNum: e.target.value - skuNum });
+    },
+    submit() {
+      this.$router.push("/trade");
     },
   },
   mounted() {
     this.getCartList();
   },
+  /*  watch:{
+   this.$refs. inputCheck(){
+      this.$refs.inputCheck.map((input)=>{
+        input.checked=this.cartList.
+      })
+    }
+  } */
 };
 </script>
 

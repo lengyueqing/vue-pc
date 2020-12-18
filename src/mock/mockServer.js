@@ -5,7 +5,7 @@ import floors from "./rfloors.json";
 //并最后参数作为响应结果响应
 Mock.mock("/mock/banners", "get", {
   code: 200,
-  "data|4": banners
+  data: banners
 });
 Mock.mock("/mock/floors", "get", {
   code: 200,

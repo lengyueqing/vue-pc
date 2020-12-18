@@ -117,6 +117,12 @@ export default {
       height: 100%;
       padding: 5px;
       float: left;
+      /deep/ .swiper-slide {
+        img {
+          width: 730px;
+          height: 455px;
+        }
+      }
     }
 
     .right {

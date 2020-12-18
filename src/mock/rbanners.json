@@ -1,6 +1,22 @@
 [
-    {
-        "id|+1": 1,
-        "imgUrl": "@image('730x455','@color')"
+      {
+        "id": 1,
+        "imgUrl": "https://s3.ax1x.com/2020/12/14/rug9S0.md.jpg" 
+      },
+      {
+        "id": 2,
+        "imgUrl": "https://s3.ax1x.com/2020/12/14/rugClV.md.jpg"
+      },
+      {
+        "id": 3,
+        "imgUrl": "https://s3.ax1x.com/2020/12/14/rugiOU.md.jpg"
+      },
+      {
+        "id": 4,
+        "imgUrl": "https://s3.ax1x.com/2020/12/14/rugHhR.md.jpg"
+      },
+      {
+        "id": 5,
+        "imgUrl": "https://s3.ax1x.com/2020/12/14/ru2Bgx.md.jpg"
       }
 ]

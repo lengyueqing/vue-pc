@@ -2,12 +2,12 @@ import axios from "axios";
 import NProgress from "nprogress";
 import getUserTempId from "@utils/getUserTempId";
 import "nprogress/nprogress.css";
-
 import store from "../store";
 
 const userTempId = getUserTempId();
+const prefixUrl = process.env.NODE_ENV === "development" ? "/" : "http://182.92.128.115/";
 const instance = axios.create({
-  baseURL: "/api",
+  baseURL: `${prefixUrl}api`,
   headers: {
     //
   }
